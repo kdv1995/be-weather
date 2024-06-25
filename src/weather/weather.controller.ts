@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 
 @Controller('weather')
@@ -23,7 +17,14 @@ export class WeatherController {
 
   @Get('city')
   async findOne(@Query('name') cityName: string) {
-    return await this.weatherService.findOne(cityName);
+    return await this.weatherService.findOneByCityName(cityName);
+  }
+  @Get('coordinates')
+  async findOneByCoordinates(
+    @Query('lat') lat: string,
+    @Query('lon') lon: string,
+  ) {
+    return await this.weatherService.findOneByCoordinates(lat, lon);
   }
 
   @Delete(':id')

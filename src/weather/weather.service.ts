@@ -32,7 +32,7 @@ export class WeatherService {
     return this.weatherModel.find().exec();
   }
 
-  async findOne(cityName: string) {
+  async findOneByCityName(cityName: string) {
     try {
       const url = `${this.API_BASE_URL}/weather?q=${cityName}&appid=${this.OPEN_WEATHER_API_KEY}`;
 
@@ -50,6 +50,27 @@ export class WeatherService {
       return savedWeather;
     } catch (error) {
       throw new NotFoundException('City not found');
+    }
+  }
+
+  async findOneByCoordinates(lat: string, lon: string) {
+    try {
+      const url = `${this.API_BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${this.OPEN_WEATHER_API_KEY}`;
+
+      const response = await fetch(url);
+      const data = (await response.json()) as IGeneralWeather;
+
+      if (!data || !data.dt) {
+        throw new Error('Invalid weather data received');
+      }
+
+      const dayOfWeek = generateDayOfWeek(data.dt);
+      const weather = { ...data, dayOfWeek };
+
+      const savedWeather = await this.create(weather);
+      return savedWeather;
+    } catch (error) {
+      throw new NotFoundException('Coordinates not found');
     }
   }
 
